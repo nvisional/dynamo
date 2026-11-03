@@ -57,22 +57,37 @@ def parse_prometheus_text(path: Path) -> Optional[PrometheusSnapshot]:
         }
 
     def histogram_quantile(name: str, quantile: float, filter_label: str = "") -> float:
-        bucket_pattern = rf"^{re.escape(name)}_bucket\{{[^}}]*{re.escape(filter_label)}[^}}]*le=\"([^\"]+)\"[^}}]*\}}\s+(\S+)"
+        # Accept any label order inside {...}. Requiring filter_label before le=
+        # silently zeroed quantiles when exporters emit le first (#17316).
+        bucket_pattern = rf"^{re.escape(name)}_bucket\{{([^}}]*)\}}\s+(\S+)"
         buckets = []
         for m in re.finditer(bucket_pattern, text, re.MULTILINE):
-            le_str, count_str = m.group(1), m.group(2)
+            labels, count_str = m.group(1), m.group(2)
+            if filter_label and filter_label not in labels:
+                continue
+            le_m = re.search(r'le="([^"]+)"', labels)
+            if not le_m:
+                continue
+            le_str = le_m.group(1)
             le = float("inf") if le_str == "+Inf" else float(le_str)
             buckets.append((le, float(count_str)))
         if not buckets:
             return 0.0
         buckets.sort(key=lambda x: x[0])
 
-        count_m = re.search(
-            rf"^{re.escape(name)}_count\{{{re.escape(filter_label)}[^}}]*\}}\s+(\S+)",
-            text,
-            re.MULTILINE,
-        )
-        total = float(count_m.group(1)) if count_m else buckets[-1][1]
+        total = None
+        count_pattern = rf"^{re.escape(name)}_count(?:\{{([^}}]*)\}})?\s+(\S+)"
+        for m in re.finditer(count_pattern, text, re.MULTILINE):
+            labels, count_str = m.group(1), m.group(2)
+            if filter_label:
+                if labels is not None and filter_label in labels:
+                    total = float(count_str)
+                    break
+            else:
+                total = float(count_str)
+                break
+        if total is None:
+            total = buckets[-1][1]
         if total == 0:
             return 0.0
 
