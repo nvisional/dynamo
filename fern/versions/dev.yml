@@ -215,6 +215,8 @@ navigation:
             path: ../pages-dev/kubernetes/auto-deployment/dynamo-profiler.md
           - page: Dynamo Planner
             path: ../pages-dev/kubernetes/auto-deployment/dynamo-planner.mdx
+          - page: Planner Live Retune
+            path: ../pages-dev/kubernetes/auto-deployment/planner-live-retune.md
       - section: Operations
         icon: screwdriver-wrench
         collapsed: open-by-default
@@ -772,7 +774,7 @@ navigation:
           - page: Structural Tag
             path: ../pages-dev/use-cases/tool-calling-and-reasoning/structural-tag.md
           - page: Reasoning Parsing
-            path: ../pages-dev/use-cases/tool-calling-and-reasoning/reasoning-parsing.md
+            path: ../pages-dev/use-cases/tool-calling-and-reasoning/reasoning-parsing.mdx
           - page: Troubleshooting Tool Calls
             path: ../pages-dev/use-cases/tool-calling-and-reasoning/troubleshooting-tool-calls.md
       - section: Many-Model Serving
@@ -880,6 +882,9 @@ navigation:
               - page: Nemotron 3.5 Lightning
                 path: ../pages-dev/recipes/model-recipes/nemotron-3-5-lightning.mdx
                 slug: nemotron-3-5-lightning
+              - page: Cosmos3 Nano Reasoner
+                path: ../pages-dev/recipes/model-recipes/cosmos3-nano-reasoner.mdx
+                slug: cosmos3-nano-reasoner
               - page: Nemotron 3 Ultra
                 path: ../pages-dev/recipes/model-recipes/nemotron-3-ultra.mdx
                 slug: nemotron-3-ultra
